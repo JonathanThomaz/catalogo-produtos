@@ -32,7 +32,7 @@ API REST desenvolvida com Node.js, TypeScript, Express e PostgreSQL para gerenci
 ### 1️⃣ Clone o repositório
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/JonathanThomaz/catalogo-produtos.git
 cd catalogo-produtos
 ```
 
