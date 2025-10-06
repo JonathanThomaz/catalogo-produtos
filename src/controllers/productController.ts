@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+﻿import { Request, Response } from 'express';
 import prisma from '../database';
 import { Decimal } from '@prisma/client/runtime/library';
 
@@ -23,24 +23,16 @@ export class ProductController {
   // GET /products/:id - Buscar produto por ID
   async getProductById(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
-      const productId = parseInt(id);
-
-      if (isNaN(productId)) {
-        return res.status(400).json({
-          error: 'ID inválido',
-          message: 'O ID deve ser um número válido'
-        });
-      }
+      const id = parseInt(req.params.id);
 
       const product = await prisma.product.findUnique({
-        where: { id: productId }
+        where: { id }
       });
 
       if (!product) {
         return res.status(404).json({
           error: 'Produto não encontrado',
-          message: `Produto com ID ${productId} não foi encontrado`
+          message: `Produto com ID ${id} não foi encontrado`
         });
       }
 
@@ -59,25 +51,10 @@ export class ProductController {
     try {
       const { title, description, price } = req.body;
 
-      // Validação básica
-      if (!title || !description || price === undefined) {
-        return res.status(400).json({
-          error: 'Dados obrigatórios',
-          message: 'Título, descrição e preço são obrigatórios'
-        });
-      }
-
-      if (typeof price !== 'number' || price < 0) {
-        return res.status(400).json({
-          error: 'Preço inválido',
-          message: 'O preço deve ser um número positivo'
-        });
-      }
-
       const product = await prisma.product.create({
         data: {
-          title: title.trim(),
-          description: description.trim(),
+          title,
+          description,
           price: new Decimal(price)
         }
       });
@@ -95,26 +72,18 @@ export class ProductController {
   // PUT /products/:id - Atualizar produto
   async updateProduct(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const { title, description, price } = req.body;
-      const productId = parseInt(id);
-
-      if (isNaN(productId)) {
-        return res.status(400).json({
-          error: 'ID inválido',
-          message: 'O ID deve ser um número válido'
-        });
-      }
 
       // Verificar se o produto existe
       const existingProduct = await prisma.product.findUnique({
-        where: { id: productId }
+        where: { id }
       });
 
       if (!existingProduct) {
         return res.status(404).json({
           error: 'Produto não encontrado',
-          message: `Produto com ID ${productId} não foi encontrado`
+          message: `Produto com ID ${id} não foi encontrado`
         });
       }
 
@@ -122,37 +91,19 @@ export class ProductController {
       const updateData: any = {};
       
       if (title !== undefined) {
-        if (typeof title !== 'string' || title.trim().length === 0) {
-          return res.status(400).json({
-            error: 'Título inválido',
-            message: 'O título deve ser uma string não vazia'
-          });
-        }
-        updateData.title = title.trim();
+        updateData.title = title;
       }
 
       if (description !== undefined) {
-        if (typeof description !== 'string') {
-          return res.status(400).json({
-            error: 'Descrição inválida',
-            message: 'A descrição deve ser uma string'
-          });
-        }
-        updateData.description = description.trim();
+        updateData.description = description;
       }
 
       if (price !== undefined) {
-        if (typeof price !== 'number' || price < 0) {
-          return res.status(400).json({
-            error: 'Preço inválido',
-            message: 'O preço deve ser um número positivo'
-          });
-        }
         updateData.price = new Decimal(price);
       }
 
       const product = await prisma.product.update({
-        where: { id: productId },
+        where: { id },
         data: updateData
       });
 
@@ -169,30 +120,22 @@ export class ProductController {
   // DELETE /products/:id - Remover produto
   async deleteProduct(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
-      const productId = parseInt(id);
-
-      if (isNaN(productId)) {
-        return res.status(400).json({
-          error: 'ID inválido',
-          message: 'O ID deve ser um número válido'
-        });
-      }
+      const id = parseInt(req.params.id);
 
       // Verificar se o produto existe
       const existingProduct = await prisma.product.findUnique({
-        where: { id: productId }
+        where: { id }
       });
 
       if (!existingProduct) {
         return res.status(404).json({
           error: 'Produto não encontrado',
-          message: `Produto com ID ${productId} não foi encontrado`
+          message: `Produto com ID ${id} não foi encontrado`
         });
       }
 
       await prisma.product.delete({
-        where: { id: productId }
+        where: { id }
       });
 
       return res.status(204).send();

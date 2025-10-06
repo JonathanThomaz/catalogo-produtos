@@ -1,5 +1,11 @@
 import { Router } from 'express';
 import { ProductController } from '../controllers/productController';
+import { ValidationMiddlewareFactory, UpdateValidationMiddleware } from '../middleware/validation';
+import { 
+  CreateProductSchema, 
+  UpdateProductSchema, 
+  ProductIdSchema 
+} from '../schemas/productSchemas';
 
 const router = Router();
 const productController = new ProductController();
@@ -63,7 +69,10 @@ router.get('/products', productController.getAllProducts.bind(productController)
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/products/:id', productController.getProductById.bind(productController));
+router.get('/products/:id', 
+  ValidationMiddlewareFactory.validateParams(ProductIdSchema),
+  productController.getProductById.bind(productController)
+);
 
 /**
  * @swagger
@@ -93,7 +102,10 @@ router.get('/products/:id', productController.getProductById.bind(productControl
  *       500:
  *         description: Erro interno do servidor
  */
-router.post('/products', productController.createProduct.bind(productController));
+router.post('/products', 
+  ValidationMiddlewareFactory.validateBody(CreateProductSchema),
+  productController.createProduct.bind(productController)
+);
 
 /**
  * @swagger
@@ -136,7 +148,11 @@ router.post('/products', productController.createProduct.bind(productController)
  *       500:
  *         description: Erro interno do servidor
  */
-router.put('/products/:id', productController.updateProduct.bind(productController));
+router.put('/products/:id', 
+  ValidationMiddlewareFactory.validateParams(ProductIdSchema),
+  UpdateValidationMiddleware.validateUpdateFields(UpdateProductSchema),
+  productController.updateProduct.bind(productController)
+);
 
 /**
  * @swagger
@@ -169,6 +185,9 @@ router.put('/products/:id', productController.updateProduct.bind(productControll
  *       500:
  *         description: Erro interno do servidor
  */
-router.delete('/products/:id', productController.deleteProduct.bind(productController));
+router.delete('/products/:id', 
+  ValidationMiddlewareFactory.validateParams(ProductIdSchema),
+  productController.deleteProduct.bind(productController)
+);
 
 export default router;

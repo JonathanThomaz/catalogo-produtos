@@ -25,7 +25,7 @@ API REST desenvolvida com Node.js, TypeScript, Express e PostgreSQL para gerenci
 
 ### Pré-requisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - Docker e Docker Compose
 - Git
 
@@ -60,6 +60,9 @@ DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_
 # Configuração da API
 PORT=3000
 NODE_ENV=development
+
+# Configuração do CORS
+CORS_ORIGIN=*
 ```
 
 ### 4️⃣ Suba o banco PostgreSQL com Docker
@@ -69,6 +72,7 @@ docker-compose up -d
 ```
 
 Verifique se o container está rodando:
+
 ```bash
 docker-compose ps
 ```
@@ -94,17 +98,20 @@ npm run seed
 ### 8️⃣ Inicie a API
 
 #### Modo desenvolvimento (com hot reload):
+
 ```bash
 npm run dev
 ```
 
 #### Modo produção:
+
 ```bash
 npm run build
 npm start
 ```
 
 A API estará disponível em:
+
 - 🌐 **API**: http://localhost:3000
 - 📚 **Endpoints**: http://localhost:3000/api/products
 - 📖 **Documentação Swagger**: http://localhost:3000/api-docs
@@ -112,9 +119,11 @@ A API estará disponível em:
 ## 📚 Endpoints da API
 
 ### Status da API
+
 - `GET /` - Retorna status da API
 
 ### Produtos
+
 - `GET /api/products` - Lista todos os produtos
 - `GET /api/products/:id` - Busca produto por ID
 - `POST /api/products` - Cria novo produto
@@ -124,6 +133,7 @@ A API estará disponível em:
 ### Exemplos de Uso
 
 #### Criar produto:
+
 ```bash
 curl -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
@@ -135,25 +145,51 @@ curl -X POST http://localhost:3000/api/products \
 ```
 
 #### Listar produtos:
+
 ```bash
 curl http://localhost:3000/api/products
 ```
 
 #### Buscar produto por ID:
+
 ```bash
 curl http://localhost:3000/api/products/1
 ```
 
-## 🗃️ Modelo do Produto
+## � Configuração do CORS
+
+A API permite configurar o CORS através de variáveis de ambiente:
+
+| Variável           | Padrão                           | Descrição                                                                  |
+| ------------------ | -------------------------------- | -------------------------------------------------------------------------- |
+| `CORS_ORIGIN`      | `*`                              | Origem permitida (`*` para todas, `http://localhost:3000` para específica) |
+| `CORS_METHODS`     | `GET,HEAD,PUT,PATCH,POST,DELETE` | Métodos HTTP permitidos                                                    |
+| `CORS_CREDENTIALS` | `false`                          | Permitir cookies/credenciais (`true`/`false`)                              |
+
+### Exemplos de configuração:
+
+**Desenvolvimento (permitir tudo):**
+
+```env
+CORS_ORIGIN=*
+```
+
+**Produção (restritivo):**
+
+```env
+CORS_ORIGIN=https://meusite.com,https://app.meusite.com
+```
+
+## �🗃️ Modelo do Produto
 
 ```typescript
 interface Product {
-  id: number;           // ID único (auto increment)
-  title: string;        // Nome do produto
-  description: string;  // Descrição detalhada
-  price: Decimal;       // Preço (precisão decimal)
-  createdAt: DateTime;  // Data de criação
-  updatedAt: DateTime;  // Data de atualização
+  id: number; // ID único (auto increment)
+  title: string; // Nome do produto
+  description: string; // Descrição detalhada
+  price: Decimal; // Preço (precisão decimal)
+  createdAt: DateTime; // Data de criação
+  updatedAt: DateTime; // Data de atualização
 }
 ```
 
@@ -161,13 +197,13 @@ interface Product {
 
 ```json
 {
-  "build": "tsc",                    // Compila TypeScript
-  "start": "node dist/server.js",    // Inicia em produção
-  "dev": "nodemon src/server.ts",    // Desenvolvimento com hot reload
-  "seed": "tsx prisma/seed.ts",      // Popula banco com dados
-  "prisma:migrate": "prisma migrate dev",      // Executa migrations
-  "prisma:generate": "prisma generate",        // Gera cliente Prisma
-  "prisma:studio": "prisma studio"             // Interface visual do banco
+  "build": "tsc", // Compila TypeScript
+  "start": "node dist/server.js", // Inicia em produção
+  "dev": "nodemon src/server.ts", // Desenvolvimento com hot reload
+  "seed": "tsx prisma/seed.ts", // Popula banco com dados
+  "prisma:migrate": "prisma migrate dev", // Executa migrations
+  "prisma:generate": "prisma generate", // Gera cliente Prisma
+  "prisma:studio": "prisma studio" // Interface visual do banco
 }
 ```
 
@@ -218,11 +254,13 @@ catalogo-produtos/
 ## 🚨 Solução de Problemas
 
 ### Erro de conexão com banco
+
 1. Verifique se o Docker está rodando
 2. Execute `docker-compose ps` para ver status dos containers
 3. Verifique as variáveis de ambiente no `.env`
 
 ### Erro nas migrations
+
 ```bash
 # Reset do banco (CUIDADO: apaga dados)
 npx prisma migrate reset
@@ -232,7 +270,9 @@ npx prisma migrate dev --name init
 ```
 
 ### Porta em uso
+
 Altere a `PORT` no arquivo `.env` ou pare o processo:
+
 ```bash
 # Windows
 netstat -ano | findstr :3000
