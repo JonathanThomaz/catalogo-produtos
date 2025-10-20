@@ -21,6 +21,14 @@ const options = {
       }
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Autenticação JWT via Bearer token'
+        }
+      },
       schemas: {
         Product: {
           type: 'object',

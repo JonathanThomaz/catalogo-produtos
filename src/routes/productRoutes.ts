@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ProductController } from '../controllers/productController';
 import { ValidationMiddlewareFactory, UpdateValidationMiddleware } from '../middleware/validation';
+import { authMiddleware } from '../middleware/authMiddleware';
 import { 
   CreateProductSchema, 
   UpdateProductSchema, 
@@ -80,6 +81,8 @@ router.get('/products/:id',
  *   post:
  *     summary: Cria um novo produto
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -99,10 +102,13 @@ router.get('/products/:id',
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
  *       500:
  *         description: Erro interno do servidor
  */
 router.post('/products', 
+  authMiddleware,
   ValidationMiddlewareFactory.validateBody(CreateProductSchema),
   productController.createProduct.bind(productController)
 );
@@ -113,6 +119,8 @@ router.post('/products',
  *   put:
  *     summary: Atualiza produto existente
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -139,6 +147,8 @@ router.post('/products',
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
  *       404:
  *         description: Produto não encontrado
  *         content:
@@ -149,6 +159,7 @@ router.post('/products',
  *         description: Erro interno do servidor
  */
 router.put('/products/:id', 
+  authMiddleware,
   ValidationMiddlewareFactory.validateParams(ProductIdSchema),
   UpdateValidationMiddleware.validateUpdateFields(UpdateProductSchema),
   productController.updateProduct.bind(productController)
@@ -160,6 +171,8 @@ router.put('/products/:id',
  *   delete:
  *     summary: Remove produto
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -176,6 +189,8 @@ router.put('/products/:id',
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
  *       404:
  *         description: Produto não encontrado
  *         content:
@@ -186,6 +201,7 @@ router.put('/products/:id',
  *         description: Erro interno do servidor
  */
 router.delete('/products/:id', 
+  authMiddleware,
   ValidationMiddlewareFactory.validateParams(ProductIdSchema),
   productController.deleteProduct.bind(productController)
 );

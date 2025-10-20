@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDatabase, disconnectDatabase } from "./database";
 import productRoutes from "./routes/productRoutes";
+import authRoutes from "./routes/authRoutes";
 import { setupSwagger } from "./config/swagger";
 
 // Carrega variáveis de ambiente
@@ -47,6 +48,7 @@ app.get("/", (req, res) => {
 
 // Rotas da API
 app.use("/api", productRoutes);
+app.use("/api/auth", authRoutes);
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
